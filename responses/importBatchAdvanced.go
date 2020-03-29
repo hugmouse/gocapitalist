@@ -1,9 +1,9 @@
 package responses
 
 type ImportBatchAdvanced struct {
-	Code    int       `json:"code"`
-	Message string    `json:"message"`
-	Data    DataBatch `json:"data"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    DataBatch   `json:"data"`
 }
 type Summary struct {
 	RUR string `json:"RUR"`
@@ -23,10 +23,14 @@ type NettoSummary struct {
 	EUR string `json:"EUR"`
 	BTC string `json:"BTC"`
 }
+type Errors struct {
+	Line    int    `json:"line"`
+	Comment string `json:"comment"`
+}
 type DataBatch struct {
-	ID           string        `json:"id"`
-	Summary      Summary       `json:"summary"`
-	Fee          Fee           `json:"fee"`
-	NettoSummary NettoSummary  `json:"nettoSummary"`
-	Errors       []interface{} `json:"errors"`
+	ID           string       `json:"id"`
+	Summary      Summary      `json:"summary"`
+	Fee          Fee          `json:"fee"`
+	NettoSummary NettoSummary `json:"nettoSummary"`
+	Errors       []Errors     `json:"errors,omitempty"`
 }
