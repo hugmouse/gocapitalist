@@ -48,6 +48,10 @@ func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*res
 	}
 
 	if data.Code != 0 {
+		err = json.Unmarshal(resp.Body(), errResponse)
+		if err != nil {
+			return nil, err
+		}
 		b.Logger.Error("http error", httpParams["operation"], logParams, err)
 		return data, errResponse
 	}
