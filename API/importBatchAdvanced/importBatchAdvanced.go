@@ -1,6 +1,7 @@
 package importBatchAdvanced
 
 import (
+	"encoding/json"
 	"github.com/hugmouse/gocapitalist/internal"
 	"github.com/hugmouse/gocapitalist/requests"
 	"github.com/hugmouse/gocapitalist/responses"
@@ -34,7 +35,11 @@ func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*res
 
 	if err != nil {
 		b.Logger.Error("http error", httpParams["operation"], logParams, err)
-		return nil, err
+		err = json.Unmarshal(resp.Body(), errResponse)
+		if err != nil {
+			return nil, err
+		}
+		b.R().SetResult(string(resp.Body())[:11]+"}")
 	}
 
 	b.Metrics.Collect(httpParams["operation"], resp.StatusCode(), errResponse.Code, resp.Time())
