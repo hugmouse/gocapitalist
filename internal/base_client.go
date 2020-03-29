@@ -5,9 +5,9 @@ import (
 	"crypto/rsa"
 	"encoding/hex"
 	"errors"
-	"github.com/go-resty/resty"
-	"gocapitalist/requests"
-	"gocapitalist/responses"
+	"github.com/go-resty/resty/v2"
+	"github.com/hugmouse/gocapitalist/requests"
+	"github.com/hugmouse/gocapitalist/responses"
 	"math/big"
 	"time"
 )
@@ -31,6 +31,7 @@ type auth struct {
 	Login                string
 	EncryptedPassword    string
 	rsaPublicKeyPkcs1Pem string
+	ParamsForAuth        map[string]string
 }
 
 type BaseClient struct {
@@ -98,11 +99,18 @@ func (r *BaseClient) SetAuth(login, plainPassword string) error {
 		return err
 	}
 
+	// Maybe remove?
+	authParams := map[string]string{}
+	authParams["token"] = data.Data.Token
+	authParams["login"] = login
+	authParams["encrypted_password"] = hex.EncodeToString(encryptedPassword)
+
 	r.Auth = &auth{
 		Token:                data.Data.Token,
 		Login:                login,
 		EncryptedPassword:    hex.EncodeToString(encryptedPassword),
 		rsaPublicKeyPkcs1Pem: data.Data.RsaPublicKeyPkcs1Pem,
+		ParamsForAuth:        authParams,
 	}
 
 	return nil
