@@ -5,6 +5,7 @@ import (
 	"github.com/hugmouse/gocapitalist/internal"
 	"github.com/hugmouse/gocapitalist/requests"
 	"github.com/hugmouse/gocapitalist/responses"
+	"strings"
 )
 
 type ImportBatchAdvanced struct {
@@ -14,6 +15,7 @@ type ImportBatchAdvanced struct {
 // https://capitalist.net/developers/api/page/import_batch_advanced
 func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*responses.ImportBatchAdvanced, error) {
 	data, errResponse := new(responses.ImportBatchAdvanced), new(responses.ErrorResponse)
+	data.Data.CSVErrors = make(map[int]string)
 
 	httpParams, logParams, err := request.Params()
 	if err != nil {
@@ -38,19 +40,26 @@ func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*res
 	// Now converting this to
 	// {"code":113,"message":"bad"}
 	if err != nil {
-		b.Logger.Error("http error", httpParams["operation"], logParams, err)
 		err = json.Unmarshal(resp.Body(), errResponse)
 		if err != nil {
 			return nil, err
 		}
-		b.R().SetResult(string(resp.Body())[:11]+"}")
+		b.R().SetResult(string(resp.Body())[:11] + "}")
 	}
 
 	if data.Code != 0 {
+		b.Logger.Error("http error", httpParams["operation"], logParams, err)
 		return data, errResponse
 	}
 
 	b.Metrics.Collect(httpParams["operation"], resp.StatusCode(), errResponse.Code, resp.Time())
+
+	if len(data.Data.Errors) > 0 {
+		s := strings.Split(httpParams["batch"], "\n")
+		for x, y := range data.Data.Errors {
+			data.Data.CSVErrors[x] = s[y.Line-1]
+		}
+	}
 
 	if resp.Error() != nil {
 		b.Logger.Error("app error", httpParams["operation"], errResponse.ErrLogParams(logParams), errResponse)
