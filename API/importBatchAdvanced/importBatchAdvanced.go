@@ -33,6 +33,10 @@ func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*res
 		SetHeader("x-response-format", "json").
 		Post("/")
 
+	// Workaround for 113 error
+	// 113 example: {"code":113,"message":"bad","data":[]}
+	// Now converting this to
+	// {"code":113,"message":"bad"}
 	if err != nil {
 		b.Logger.Error("http error", httpParams["operation"], logParams, err)
 		err = json.Unmarshal(resp.Body(), errResponse)
@@ -40,6 +44,10 @@ func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*res
 			return nil, err
 		}
 		b.R().SetResult(string(resp.Body())[:11]+"}")
+	}
+
+	if data.Code != 0 {
+		return data, errResponse
 	}
 
 	b.Metrics.Collect(httpParams["operation"], resp.StatusCode(), errResponse.Code, resp.Time())
