@@ -1,9 +1,9 @@
 package responses
 
 type ImportBatchAdvanced struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    DataBatch   `json:"data"`
+	Code    int       `json:"code"`
+	Message string    `json:"message"`
+	Data    DataBatch `json:"data,omitempty"`
 }
 type Summary struct {
 	RUR string `json:"RUR"`
@@ -33,4 +33,5 @@ type DataBatch struct {
 	Fee          Fee          `json:"fee"`
 	NettoSummary NettoSummary `json:"nettoSummary"`
 	Errors       []Errors     `json:"errors,omitempty"`
+	CSVErrors    map[int]string
 }
