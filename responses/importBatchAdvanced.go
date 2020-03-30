@@ -33,6 +33,5 @@ type DataBatch struct {
 	Fee           Fee          `json:"fee"`
 	NettoSummary  NettoSummary `json:"nettoSummary"`
 	Errors        []Errors     `json:"errors,omitempty"`
-	CSVErrorsFull map[int]string
-	CSVErrorsID   map[int]string
+	CSVErrorsWithID map[string]error
 }
