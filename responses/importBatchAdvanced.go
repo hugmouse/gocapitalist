@@ -28,10 +28,11 @@ type Errors struct {
 	Comment string `json:"comment"`
 }
 type DataBatch struct {
-	ID           string       `json:"id"`
-	Summary      Summary      `json:"summary"`
-	Fee          Fee          `json:"fee"`
-	NettoSummary NettoSummary `json:"nettoSummary"`
-	Errors       []Errors     `json:"errors,omitempty"`
-	CSVErrors    map[int]string
+	ID            string       `json:"id"`
+	Summary       Summary      `json:"summary"`
+	Fee           Fee          `json:"fee"`
+	NettoSummary  NettoSummary `json:"nettoSummary"`
+	Errors        []Errors     `json:"errors,omitempty"`
+	CSVErrorsFull map[int]string
+	CSVErrorsID   map[int]string
 }

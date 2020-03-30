@@ -15,7 +15,8 @@ type ImportBatchAdvanced struct {
 // https://capitalist.net/developers/api/page/import_batch_advanced
 func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*responses.ImportBatchAdvanced, error) {
 	data, errResponse := new(responses.ImportBatchAdvanced), new(responses.ErrorResponse)
-	data.Data.CSVErrors = make(map[int]string)
+	data.Data.CSVErrorsFull = make(map[int]string)
+	data.Data.CSVErrorsID = make(map[int]string)
 
 	httpParams, logParams, err := request.Params()
 	if err != nil {
@@ -61,7 +62,9 @@ func (b *ImportBatchAdvanced) Import(request requests.ImportBatchAdvanced) (*res
 	if len(data.Data.Errors) > 0 {
 		s := strings.Split(httpParams["batch"], "\n")
 		for x, y := range data.Data.Errors {
-			data.Data.CSVErrors[x] = s[y.Line-1]
+			moreInfoFromError := strings.Split(s[y.Line-1], ";")
+			data.Data.CSVErrorsFull[x] = s[y.Line-1]
+			data.Data.CSVErrorsID[x] = moreInfoFromError[4] // payment number from your system
 		}
 	}
 
